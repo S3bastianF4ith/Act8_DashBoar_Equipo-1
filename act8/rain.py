@@ -1,11 +1,10 @@
 from pathlib import Path
 
-import plotly.express as px
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 
-
-DATA_FILE = Path(__file__).resolve().parent / "winequalityN.csv"
+DATA_FILE = Path(__file__).with_name("winequalityN.csv")
 
 NUMERIC_COLUMNS = [
     "fixed acidity",
@@ -226,7 +225,10 @@ def main():
 
     st.subheader("Tabla filtrada")
     columnas_tabla = ["type", "quality", "alcohol", "pH", "residual sugar", "density", "volatile acidity", "citric acid", "chlorides", "sulphates", "free sulfur dioxide", "total sulfur dioxide"]
-    st.dataframe(filtrado[columnas_tabla].head(10) if mostrar_todo else filtrado[columnas_tabla], use_container_width=True)
+    st.dataframe(
+        filtrado[columnas_tabla].head(10) if mostrar_todo else filtrado[columnas_tabla],
+        width="stretch",
+    )
 
     st.subheader("Estadisticas del conjunto filtrado")
     if filtrado.empty:
@@ -234,23 +236,23 @@ def main():
         return
 
     estadisticas = estadisticas_filtradas(filtrado)
-    st.dataframe(estadisticas, use_container_width=True)
+    st.dataframe(estadisticas, width="stretch")
 
     st.subheader("Resumen de frecuencias de quality")
     freq_quality = filtrado["quality"].dropna()
     tabla_freq = tabla_frecuencias(freq_quality, bins=min(8, freq_quality.nunique())) if not freq_quality.empty else pd.DataFrame()
-    st.dataframe(tabla_freq, use_container_width=True)
+    st.dataframe(tabla_freq, width="stretch")
 
     st.subheader("Graficos dinamicos")
     c1, c2 = st.columns(2)
     with c1:
-        st.plotly_chart(grafico_tipo_vino(filtrado), use_container_width=True)
+        st.plotly_chart(grafico_tipo_vino(filtrado), width="stretch")
         _describir_grafico(
             "Grafico 1: tipos de vino",
             "Muestra cuantas muestras quedan de cada tipo despues de aplicar los filtros. Sirve para verificar si el recorte deja mas vino blanco o tinto dentro del analisis.",
         )
     with c2:
-        st.plotly_chart(grafico_histograma_alcohol(filtrado), use_container_width=True)
+        st.plotly_chart(grafico_histograma_alcohol(filtrado), width="stretch")
         _describir_grafico(
             "Grafico 2: alcohol",
             "El histograma resume como se distribuye el alcohol en el conjunto filtrado. Cambia con todos los filtros porque solo usa los registros que cumplen las condiciones elegidas.",
@@ -258,13 +260,13 @@ def main():
 
     c3, c4 = st.columns(2)
     with c3:
-        st.plotly_chart(grafico_boxplot_calidad_por_tipo(filtrado), use_container_width=True)
+        st.plotly_chart(grafico_boxplot_calidad_por_tipo(filtrado), width="stretch")
         _describir_grafico(
             "Grafico 3: quality por tipo",
             "El boxplot compara la calidad entre tipos de vino. Permite ver mediana, dispersion y valores atipicos bajo los filtros aplicados.",
         )
     with c4:
-        st.plotly_chart(grafico_dispersion(filtrado), use_container_width=True)
+        st.plotly_chart(grafico_dispersion(filtrado), width="stretch")
         _describir_grafico(
             "Grafico 4: residual sugar vs alcohol",
             "La dispersion relaciona azucar residual con alcohol y colorea los puntos por quality. Ayuda a detectar si los vinos filtrados muestran una tendencia entre ambas variables.",
@@ -272,13 +274,13 @@ def main():
 
     c5, c6 = st.columns(2)
     with c5:
-        st.plotly_chart(grafico_correlation(filtrado), use_container_width=True)
+        st.plotly_chart(grafico_correlation(filtrado), width="stretch")
         _describir_grafico(
             "Grafico 5: correlacion con quality",
             "Las barras muestran que variables numericas se mueven mas junto con quality en el subconjunto filtrado. Esto hace mas facil explicar que factores suben o bajan la calidad observada.",
         )
     with c6:
-        st.plotly_chart(grafico_pH_por_tipo(filtrado), use_container_width=True)
+        st.plotly_chart(grafico_pH_por_tipo(filtrado), width="stretch")
         _describir_grafico(
             "Grafico 6: pH por tipo",
             "Este grafico compara el pH promedio entre tipos de vino. Es util porque el pH cambia con la acidez y ayuda a explicar diferencias de perfil entre blancos y tintos.",
